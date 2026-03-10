@@ -1,0 +1,5 @@
+﻿scam_model/model.pt
+scam_model/scaler.pkl
+scam_dataset.csv
+api/__pycache__/
+api/detections.db
