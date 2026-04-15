@@ -10,6 +10,35 @@ const FILTERS = [
   { key: 'twitter',  label: ' X (Twitter)' },
 ];
 
+// Helper to get extension history
+async function getExtensionHistory() {
+  if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.id) {
+    return [];
+  }
+  
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({ action: 'getHistory' }, (response) => {
+      if (response && response.history) {
+        const formatted = response.history.map(item => ({
+          id: item.id,
+          text: item.text || '',
+          label: item.verdict === 'SCAM' ? 1 : 0,
+          verdict: item.verdict,
+          confidence: item.confidence,
+          scam_prob: item.scam_prob,
+          legit_prob: item.legit_prob,
+          platform: item.platform,
+          timestamp: item.timestamp,
+          is_mock: item.is_mock || false
+        }));
+        resolve(formatted);
+      } else {
+        resolve([]);
+      }
+    });
+  });
+}
+
 export default function HistoryPage() {
   const [rows,    setRows]    = useState([]);
   const [filter,  setFilter]  = useState('all');
@@ -19,16 +48,33 @@ export default function HistoryPage() {
 
   const load = async () => {
     setLoading(true);
-    try { const data = await getDetections(200); setRows(data); setError(''); }
-    catch { setError('Cannot reach API.'); }
-    finally { setLoading(false); }
+    try { 
+      // Get both backend and extension data
+      const [backendData, extensionData] = await Promise.all([
+        getDetections(200).catch(() => []),
+        getExtensionHistory().catch(() => [])
+      ]);
+      
+      // Merge and sort by ID (newest first)
+      const allData = [...backendData, ...extensionData];
+      allData.sort((a, b) => (b.id || 0) - (a.id || 0));
+      
+      setRows(allData); 
+      setError(''); 
+    } catch (err) { 
+      console.error('Failed to load history:', err);
+      setError('Cannot reach API.'); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   useEffect(() => { load(); }, []);
 
   const handleClear = async () => {
-    if (!window.confirm('Clear all records?')) return;
-    await clearDetections(); load();
+    if (!window.confirm('Clear all records? This clears ONLY backend records. Extension history will remain.')) return;
+    await clearDetections(); 
+    load();
   };
 
   const filtered = rows.filter(r => {
@@ -81,10 +127,10 @@ export default function HistoryPage() {
         <div className="table-error card"> {error}</div>
       ) : filtered.length === 0 ? (
         <div className="table-empty card">
-          <div style={{ fontSize: 40, marginBottom: 12 }}></div>
+          <div style={{ fontSize: 40, marginBottom: 12 }}>📭</div>
           <p>No detections found.</p>
           <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>
-            Use the Detect page to analyse a post.
+            Use the Detect page for manual scans, or the extension on Facebook/Twitter.
           </p>
         </div>
       ) : (
@@ -101,12 +147,12 @@ export default function HistoryPage() {
               {filtered.map(r => {
                 const isScam = r.label === 1;
                 const conf   = parseFloat(r.confidence) || 0;
-                const ts     = r.timestamp ? new Date(r.timestamp + 'Z').toLocaleString() : '—';
+                const ts     = r.timestamp ? new Date(r.timestamp).toLocaleString() : '—';
                 return (
                   <tr key={r.id} className={isScam ? 'row-scam' : 'row-legit'}>
                     <td className="mono-cell">#{r.id}</td>
                     <td><span className={`tag ${isScam ? 'tag-scam' : 'tag-legit'}`}>{isScam ? ' Scam' : ' Legit'}</span></td>
-                    <td><span className="plat-cell">{r.platform === 'facebook' ? ' FB' : ' X'}</span></td>
+                    <td><span className="plat-cell">{r.platform === 'facebook' ? ' FB' : r.platform === 'twitter' ? ' X' : ' ?'}</span></td>
                     <td className="text-cell" title={r.text || ''}>{(r.text || '').substring(0, 70)}{r.text?.length > 70 ? '…' : ''}</td>
                     <td>
                       <div className="mini-bar-wrap">

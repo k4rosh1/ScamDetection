@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ScamShield Detector</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>ScamShield</h1>
+      <span class="badge">AI-Powered</span>
+    </div>
+    
+    <div class="auto-detect-toggle">
+      <div class="toggle-header">
+        <span class="toggle-title">🛡️ Auto Detection</span>
+        <button id="autoDetectToggleBtn" class="toggle-btn active">
+          <span class="toggle-status">✅ ON</span>
+        </button>
+      </div>
+      <p class="toggle-description">When ON, automatically scans posts and profiles for scams. When OFF, only manual scans work.</p>
+    </div>
+    
+    <div class="profile-scan-section">
+      <h2 class="section-title">👤 Profile & Page Scanner</h2>
+      
+      <div class="profile-info">
+        <div class="info-card">
+          <div class="info-icon">📊</div>
+          <div class="info-text">
+            <span class="info-label">Account Age:</span>
+            <span id="accountAge" class="info-value">-- days</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">📝</div>
+          <div class="info-text">
+            <span class="info-label">Posts per Day:</span>
+            <span id="postsPerDay" class="info-value">--</span>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">🕒</div>
+          <div class="info-text">
+            <span class="info-label">Last Active:</span>
+            <span id="lastActive" class="info-value">--</span>
+          </div>
+        </div>
+      </div>
+      
+      <button id="scanProfileBtn" class="btn-scan-profile">
+        🔍 Scan This Page / User
+      </button>
+      <div id="profileScanStatus" class="profile-scan-status" style="display: none;"></div>
+    </div>
+    
+    <div id="resultSection" class="result-section" style="display: none;">
+      <div class="result-card">
+        <div class="result-header">
+          <span id="resultIcon">⚠️</span>
+          <span id="resultVerdict">SCAM DETECTED</span>
+        </div>
+        <div class="result-details">
+          <div class="detail-row">
+            <span class="detail-label">Confidence:</span>
+            <span class="detail-value" id="resultConfidence">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div id="confidenceBar" class="progress-fill" style="width: 0%"></div>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Scam Probability:</span>
+            <span class="detail-value" id="resultScamProb">0%</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Legitimate:</span>
+            <span class="detail-value" id="resultLegitProb">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="examples-section">
+      <h3 class="examples-title">📋 Test the Detector</h3>
+      <div class="examples-grid">
+        <button id="scamSampleBtn" class="example-btn scam-example">
+          ⚠️ Scam Sample
+        </button>
+        <button id="legitSampleBtn" class="example-btn legit-example">
+          ✅ Legit Sample
+        </button>
+      </div>
+      <p class="examples-note">Click to test the detector with sample texts</p>
+    </div>
+    
+    <div class="stats-section">
+      <div class="stat-card">
+        <div class="stat-value" id="totalDetections">-</div>
+        <div class="stat-label">Total Checks</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="scamCount">-</div>
+        <div class="stat-label">Scams Found</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="scamRate">-</div>
+        <div class="stat-label">Scam Rate</div>
+      </div>
+    </div>
+    
+    <div class="api-status" id="apiStatus">
+      <div class="status-dot"></div>
+      <span>Checking API...</span>
+    </div>
+    
+    <div class="footer">
+      <a href="#" id="openDashboard">📊 Dashboard</a>
+      <a href="#" id="openHistory">📜 History</a>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

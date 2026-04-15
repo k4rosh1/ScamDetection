@@ -25,7 +25,14 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "globals": {
+      "chrome": "readonly"
+    },
+    "env": {
+      "browser": true,
+      "webextensions": true
+    }
   },
   "browserslist": {
     "production": [

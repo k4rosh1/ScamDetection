@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "ScamShield Detector",
+  "version": "1.0.0",
+  "description": "AI-powered scam detection",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "notifications",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*",
+    "https://*.facebook.com/*",
+    "https://*.twitter.com/*",
+    "https://*.x.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ScamShield"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.facebook.com/*",
+        "https://*.twitter.com/*",
+        "https://*.x.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
