@@ -6,7 +6,10 @@ export async function predict(payload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error(`API error ${res.status}`);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || `API error ${res.status}`);
+  }
   return res.json();
 }
 
@@ -33,7 +36,7 @@ export async function clearDetections() {
 
 export async function checkHealth() {
   try {
-    const res = await fetch(`${BASE}/`, { signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`${BASE}/health`, { signal: AbortSignal.timeout(3000) });
     return res.ok;
   } catch {
     return false;

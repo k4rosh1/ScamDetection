@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import DetectPage    from './pages/DetectPage';
 import DashboardPage from './pages/DashboardPage';
@@ -8,11 +8,33 @@ import './App.css';
 
 function Navbar({ theme, toggleTheme }) {
   const [online, setOnline] = useState(null);
+  const timerRef = useRef(null);
 
   useEffect(() => {
-    checkHealth().then(ok => setOnline(ok));
-    const t = setInterval(() => checkHealth().then(ok => setOnline(ok)), 30000);
-    return () => clearInterval(t);
+    const check = () => checkHealth().then(ok => setOnline(ok));
+
+    function start() {
+      timerRef.current = setInterval(check, 30000);
+    }
+    function stop() {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+    function onVisibilityChange() {
+      if (document.hidden) {
+        stop();
+      } else {
+        check(); // immediate check on tab focus
+        start();
+      }
+    }
+
+    check();
+    start();
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, []);
 
   return (
@@ -41,7 +63,6 @@ function Navbar({ theme, toggleTheme }) {
         <button className="theme-toggle" onClick={toggleTheme} title="Toggle light/dark mode">
           {theme === 'dark' ? '☀️' : '🌙'}
         </button>
-
         <div className={`navbar-status ${online === false ? 'offline' : ''}`}>
           <span className={`status-dot ${online === true ? 'online' : online === false ? 'offline' : ''}`} />
           <span>

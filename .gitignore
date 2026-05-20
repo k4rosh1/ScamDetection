@@ -1,5 +1,18 @@
-﻿scam_model/model.pt
+﻿# Model files (too large for GitHub)
+scam_model/model.pt
 scam_model/scaler.pkl
 scam_dataset.csv
-api/__pycache__/
+
+# Database
 api/detections.db
+
+# Encryption key — NEVER commit this
+api/.env
+
+# Python cache
+api/__pycache__/
+__pycache__/
+*.pyc
+
+# Node modules
+frontend/node_modules/

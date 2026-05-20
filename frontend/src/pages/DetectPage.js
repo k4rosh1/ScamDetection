@@ -45,16 +45,19 @@ function ResultCard({ result }) {
   return (
     <div className={`result-card ${isScam ? 'result-scam' : 'result-legit'}`}>
       {result.is_mock && (
-        <div className="mock-banner"> Mock Mode — predictions are simulated</div>
+        <div className="mock-banner">🟡 Mock Mode — predictions are simulated</div>
+      )}
+      {result.is_duplicate && (
+        <div className="duplicate-banner">⚡ Cached result — this post was scanned before. No duplicate saved to database.</div>
       )}
       <div className="result-header">
         <div className={`result-icon ${isScam ? 'icon-scam' : 'icon-legit'}`}>
-          {isScam ? '' : ''}
+          {isScam ? '🚨' : '✅'}
         </div>
         <div>
           <div className="result-verdict">{isScam ? 'Scam Detected' : 'Looks Legitimate'}</div>
           <div className="result-platform">
-            {result.platform === 'facebook' ? 'Facebook' : 'X (Twitter)'}
+            {result.platform === 'facebook' ? '📘 Facebook' : '🐦 X (Twitter)'}
           </div>
         </div>
         <span className={`tag ${isScam ? 'tag-scam' : 'tag-legit'}`}>
@@ -139,7 +142,7 @@ export default function DetectPage() {
   };
 
   const fillScamSample = () => {
-    setText("GRABE! Kumita ako ng 50000 pesos sa loob ng 7 araw! DM mo ko para malaman kung paano! bit.ly/abc123");
+    setText("GRABE! Kumita ako ng 50000 pesos sa loob ng 7 araw! DM mo ko para malaman kung paano! 💰🔥 bit.ly/abc123");
     const age = 30;
     setMeta(prev => ({ ...prev, account_age: age, posting_frequency: 15.0 }));
     setJoinedDate(daysToDate(age));
@@ -148,7 +151,7 @@ export default function DetectPage() {
   };
 
   const fillLegitSample = () => {
-    setText("Kumain kami ni Maria sa Jollibee kanina. Masarap pa rin ang Chickenjoy! Highly recommend ");
+    setText("Kumain kami ni Maria sa Jollibee kanina. Masarap pa rin ang Chickenjoy! Highly recommend 😄");
     const age = 800;
     setMeta(prev => ({ ...prev, account_age: age, posting_frequency: 1.2 }));
     setJoinedDate(daysToDate(age));
@@ -167,7 +170,7 @@ export default function DetectPage() {
           <p className="page-sub">Enter a post caption and account metadata to get a scam verdict.</p>
         </div>
         {online === false && (
-          <div className="offline-banner">API is offline — start the FastAPI server first</div>
+          <div className="offline-banner">⚠️ API is offline — start the FastAPI server first</div>
         )}
       </div>
 
@@ -179,21 +182,21 @@ export default function DetectPage() {
           <div className="platform-selector">
             <button className={`plat-btn ${meta.platform === 'facebook' ? 'plat-active' : ''}`}
               onClick={() => setMeta(p => ({ ...p, platform: 'facebook' }))}>
-              Facebook
+              📘 Facebook
             </button>
             <button className={`plat-btn ${meta.platform === 'twitter' ? 'plat-active' : ''}`}
               onClick={() => setMeta(p => ({ ...p, platform: 'twitter' }))}>
-              X (Twitter)
+              🐦 X (Twitter)
             </button>
           </div>
 
           {/* Tabs */}
           <div className="tab-bar">
             <button className={`tab-btn ${tab === 'text' ? 'tab-active' : ''}`} onClick={() => setTab('text')}>
-              Post Caption
+              ✏️ Post Caption
             </button>
             <button className={`tab-btn ${tab === 'meta' ? 'tab-active' : ''}`} onClick={() => setTab('meta')}>
-              Account Metadata
+              👤 Account Metadata
             </button>
           </div>
 
@@ -216,10 +219,10 @@ export default function DetectPage() {
               <div className="examples-wrap">
                 <span className="examples-label">Try an example:</span>
                 <button className="example-btn scam-ex" onClick={fillScamSample}>
-                  Scam sample
+                  🚨 Scam sample
                 </button>
                 <button className="example-btn legit-ex" onClick={fillLegitSample}>
-                  Legit sample
+                  ✅ Legit sample
                 </button>
               </div>
             </div>
@@ -228,7 +231,7 @@ export default function DetectPage() {
           {/* Tab: Metadata */}
           {tab === 'meta' && (
             <div className="tab-content meta-form">
-              <div className="meta-section-title">Account Info</div>
+              <div className="meta-section-title">📅 Account Info</div>
 
               {/* Date picker — user picks join date, days calculated automatically */}
               <div className="date-field-row">
@@ -252,7 +255,7 @@ export default function DetectPage() {
                 </div>
               </div>
 
-              <div className="meta-section-title" style={{ marginTop: 20 }}>Activity</div>
+              <div className="meta-section-title" style={{ marginTop: 20 }}>📊 Activity</div>
               <NumberField
                 label="Posts per Day"
                 name="posting_frequency"
@@ -264,12 +267,12 @@ export default function DetectPage() {
             </div>
           )}
 
-          {error && <div className="error-msg">{error}</div>}
+          {error && <div className="error-msg">⚠️ {error}</div>}
 
           <div className="action-row">
             <button className="btn btn-primary analyze-btn" onClick={handleSubmit}
               disabled={loading || !text.trim()}>
-              {loading ? <><span className="spinner" /> Analysing...</> : <>Analyse Post</>}
+              {loading ? <><span className="spinner" /> Analysing...</> : <>🔍 Analyse Post</>}
             </button>
             <button className="btn btn-ghost" onClick={handleReset}>Reset</button>
           </div>
@@ -279,13 +282,13 @@ export default function DetectPage() {
         <div className="result-panel">
           {!result && !loading && (
             <div className="result-placeholder">
-              <div className="placeholder-icon"></div>
+              <div className="placeholder-icon">🛡️</div>
               <p className="placeholder-title">Ready to analyse</p>
               <p className="placeholder-sub">Enter a post caption and click <strong>Analyse Post</strong>.</p>
               <div className="placeholder-tips">
-                <div className="tip">Pick the account's join date for accuracy</div>
-                <div className="tip">Supports Tagalog, English, and Taglish</div>
-                <div className="tip">Powered by mBERT + Early Fusion</div>
+                <div className="tip">💡 Pick the account's join date for accuracy</div>
+                <div className="tip">🌐 Supports Tagalog, English, and Taglish</div>
+                <div className="tip">⚡ Powered by mBERT + Early Fusion</div>
               </div>
             </div>
           )}
@@ -302,10 +305,10 @@ export default function DetectPage() {
             <div style={{ animation: 'fadeInUp 0.35s ease' }}>
               <ResultCard result={result} />
               <div className="summary-card card" style={{ marginTop: 16 }}>
-                <div className="summary-title">Input Summary</div>
+                <div className="summary-title">📋 Input Summary</div>
                 <div className="summary-grid">
                   {[
-                    { label: 'Platform',    value: meta.platform === 'facebook' ? 'Facebook' : 'X' },
+                    { label: 'Platform',    value: meta.platform === 'facebook' ? '📘 Facebook' : '🐦 X' },
                     { label: 'Joined Date', value: joinedDate },
                     { label: 'Acct Age',    value: `${meta.account_age} days` },
                     { label: 'Posts/Day',   value: meta.posting_frequency },

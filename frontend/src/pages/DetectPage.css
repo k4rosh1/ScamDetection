@@ -295,3 +295,14 @@
   animation: spin 0.8s linear infinite;
   margin: 0 auto 12px;
 }
+
+/* Duplicate cache banner */
+.duplicate-banner {
+  background: rgba(124, 92, 252, 0.1);
+  border: 1px solid rgba(124, 92, 252, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
