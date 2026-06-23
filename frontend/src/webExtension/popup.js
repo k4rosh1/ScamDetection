@@ -487,6 +487,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       showProfileStatus(`✅ Scan complete! ${request.count} posts analyzed and saved to history`, 'success');
     }
   }
+  if (request.action === 'qrScanResult') {
+    console.log(`📱 QR Scan Result:`, request);
+    if (profileScanStatus) {
+      const status = request.isScam ? '⚠️ QR scam detected!' : '✅ QR link verified safe';
+      showProfileStatus(status, request.isScam ? 'error' : 'success');
+    }
+  }
 });
 
 const style = document.createElement('style');

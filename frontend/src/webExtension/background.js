@@ -98,6 +98,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
   
+  if (request.action === 'detectQR') {
+    console.log('📱 Detecting QR link:', request.url);
+    // Simulate QR link detection - Replace with actual API call
+    setTimeout(() => {
+      const isScam = Math.random() < 0.3;
+      sendResponse({ 
+        success: true, 
+        isScam: isScam,
+        url: request.url,
+        message: isScam ? 'Potential scam detected' : 'Link appears safe'
+      });
+    }, 1500);
+    return true;
+  }
+  
   if (request.action === 'detectText') {
     console.log('📡 Detecting text, length:', request.text?.length);
     
@@ -168,6 +183,8 @@ async function detectScam(text, url, platform = 'web', type = 'post') {
       url: url || 'unknown',
       type: type
     });
+    
+    console.log(`✅ Saved to history: ${data.verdict}`);
     
     return data;
   } catch (error) {
